@@ -1,4 +1,4 @@
-# upackage
+# @ritsuwastaken/upackage
 
 Read, edit and write package files of Unreal Engine 1 and 2 games: `.u`, `.utx`, `.uax`, `.ukx`, `.usx`, maps. Versions from 68 to 177.
 

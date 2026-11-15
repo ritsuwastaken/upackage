@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
 import { packageTag } from "@ritsuwastaken/farchive";
-import { addName, build, className, findExport, parse, path, PackageError, scripts, setScript, stripScripts, writeTextBuffer, type Package } from "../src/index.ts";
+import { addName, build, className, findExport, parse, path, PackageError, scriptTexts, setScriptText, stripScriptText, writeTextBuffer, type Package } from "../src/index.ts";
 
 const sample = (): Package => {
   const pkg: Package = {
@@ -43,20 +43,20 @@ test("builds and parses a package", () => {
   assert.equal(findExport(back, "mywnd.scripttext"), 2);
 });
 
-test("reads and replaces class source", () => {
+test("reads and replaces script text", () => {
   const pkg = sample();
-  assert.deepEqual(scripts(pkg), [{ class: "MyWnd", path: "MyWnd", text: "class MyWnd extends Object;\r\n" }]);
+  assert.deepEqual(scriptTexts(pkg), [{ class: "MyWnd", path: "MyWnd", text: "class MyWnd extends Object;\r\n" }]);
   const long = `class MyWnd extends Object;\r\n${"// é Привет\r\n".repeat(100)}`;
-  setScript(pkg, "mywnd", long);
-  assert.equal(scripts(parse(build(pkg)))[0]!.text, long);
-  assert.throws(() => setScript(pkg, "Other", ""), /No script text for Other/);
+  setScriptText(pkg, "mywnd", long);
+  assert.equal(scriptTexts(parse(build(pkg)))[0]!.text, long);
+  assert.throws(() => setScriptText(pkg, "Other", ""), /No script text for Other/);
 });
 
-test("strips class source", () => {
+test("strips script text", () => {
   const pkg = sample();
-  assert.equal(stripScripts(pkg), 1);
+  assert.equal(stripScriptText(pkg), 1);
   const back = parse(build(pkg));
-  assert.deepEqual(scripts(back), []);
+  assert.deepEqual(scriptTexts(back), []);
   assert.equal(back.exports[1]!.data.length, 10);
 });
 

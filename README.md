@@ -12,12 +12,14 @@ npm install @ritsuwastaken/upackage
 
 ```ts
 import { readFile, writeFile } from "node:fs/promises";
-import { build, className, parse, path, scripts, setScript } from "@ritsuwastaken/upackage";
+import { build, className, parse, path, scriptTexts, setScriptText } from "@ritsuwastaken/upackage";
 
 const pkg = parse(await readFile("Engine.u"));
 pkg.exports.forEach((entry, i) => console.log(path(pkg, i + 1), className(pkg, i + 1), entry.data.length));
 
-for (const script of scripts(pkg)) console.log(script.class, script.text.length);
-setScript(pkg, "Actor", "class Actor extends Object;\r\n");
+for (const entry of scriptTexts(pkg)) console.log(entry.class, entry.text.length);
+setScriptText(pkg, "Actor", "class Actor extends Object;\r\n");
 await writeFile("Engine.u", build(pkg));
 ```
+
+Script text is the UnrealScript source stored next to each compiled class.

@@ -1,0 +1,49 @@
+{
+    "name": "@ritsuwastaken/upackage",
+    "version": "1.0.0",
+    "description": "read, edit and write unreal engine 1 and 2 packages",
+    "type": "module",
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "keywords": [
+        "upackage",
+        "package",
+        "upk",
+        "utx",
+        "unrealscript",
+        "typescript",
+        "javascript"
+    ],
+    "author": "ritsuwastaken",
+    "license": "Unlicense",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ritsuwastaken/upackage.git"
+    },
+    "engines": {
+        "node": ">=22"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "test": "npm run build && node --test \"test/**/*.test.ts\"",
+        "prepack": "npm run build"
+    },
+    "dependencies": {
+        "@ritsuwastaken/farchive": "^1.0.2"
+    },
+    "devDependencies": {
+        "@types/node": "^22.20.5",
+        "typescript": "7.0.2"
+    }
+}

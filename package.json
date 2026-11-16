@@ -40,7 +40,7 @@
         "prepack": "npm run build"
     },
     "dependencies": {
-        "@ritsuwastaken/farchive": "^1.0.3"
+        "@ritsuwastaken/farchive": "^1.0.4"
     },
     "devDependencies": {
         "@types/node": "^22.20.5",

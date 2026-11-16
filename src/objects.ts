@@ -1,8 +1,7 @@
 import { Reader, Writer } from "@ritsuwastaken/farchive";
+import { defaultNameFlags, maxPathDepth } from "./constants.ts";
 import { PackageError } from "./error.ts";
-import type { Export, Import, Package } from "./package.ts";
-
-export type ObjectRef = number;
+import type { Export, Import, ObjectRef, Package, TextBuffer } from "./types.ts";
 
 export const nameOf = (pkg: Package, index: number): string => {
   const entry = pkg.names[index];
@@ -31,7 +30,7 @@ export const className = (pkg: Package, ref: ObjectRef): string => {
 
 export const path = (pkg: Package, ref: ObjectRef): string => {
   const parts: string[] = [];
-  for (let current = ref, depth = 0; current !== 0 && depth < 64; depth++) {
+  for (let current = ref, depth = 0; current !== 0 && depth < maxPathDepth; depth++) {
     const entry = resolve(pkg, current)!;
     parts.unshift(nameOf(pkg, entry.name));
     current = entry.outer;
@@ -50,18 +49,12 @@ export const findExport = (pkg: Package, objectPath: string, type?: string): Obj
 
 export const findName = (pkg: Package, name: string): number => pkg.names.findIndex((entry) => entry.name.toLowerCase() === name.toLowerCase());
 
-export const addName = (pkg: Package, name: string, flags = 0x70010): number => {
+export const addName = (pkg: Package, name: string, flags = defaultNameFlags): number => {
   const found = findName(pkg, name);
   if (found >= 0) return found;
   pkg.names.push({ name, flags });
   return pkg.names.length - 1;
 };
-
-export interface TextBuffer {
-  pos: number;
-  top: number;
-  text: string;
-}
 
 const isNone = (pkg: Package, index: number) => nameOf(pkg, index) === "None";
 

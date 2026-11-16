@@ -1,43 +1,7 @@
 import { ArchiveError, packageTag, Reader, versions, Writer } from "@ritsuwastaken/farchive";
+import { minVersion } from "./constants.ts";
 import { PackageError } from "./error.ts";
-
-export interface Name {
-  name: string;
-  flags: number;
-}
-
-export interface Import {
-  classPackage: number;
-  className: number;
-  outer: number;
-  name: number;
-}
-
-export interface Export {
-  class: number;
-  super: number;
-  outer: number;
-  name: number;
-  flags: number;
-  data: Uint8Array;
-}
-
-export interface Generation {
-  exports: number;
-  names: number;
-}
-
-export interface Package {
-  version: number;
-  licensee: number;
-  flags: number;
-  guid: Uint8Array | null;
-  generations: Generation[];
-  names: Name[];
-  imports: Import[];
-  exports: Export[];
-  trailer: Uint8Array;
-}
+import type { Package } from "./types.ts";
 
 const count = (reader: Reader, value: number, what: string, at: number) => {
   if (value < 0 || value > reader.bytes.length) throw new PackageError(`Invalid ${what} count ${value}`, at);
@@ -65,7 +29,7 @@ function read(bytes: Uint8Array): Package {
   const exportOffset = reader.i32();
   const importCount = count(reader, reader.i32(), "import", 28);
   const importOffset = reader.i32();
-  if (version < 68 || version >= versions.int32Indexes) throw new PackageError(`Package version ${version} is not supported`);
+  if (version < minVersion || version >= versions.int32Indexes) throw new PackageError(`Package version ${version} is not supported`);
   const guid = reader.take(16);
   const generations = Array.from({ length: count(reader, reader.i32(), "generation", reader.offset - 4) }, () => ({ exports: reader.i32(), names: reader.i32() }));
 

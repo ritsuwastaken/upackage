@@ -1,12 +1,6 @@
 import { PackageError } from "./error.ts";
 import { className, nameOf, objectName, path, readTextBuffer, writeTextBuffer } from "./objects.ts";
-import type { Package } from "./package.ts";
-
-export interface ScriptText {
-  class: string;
-  path: string;
-  text: string;
-}
+import type { Package, ScriptText } from "./types.ts";
 
 const scriptTextExports = (pkg: Package) =>
   pkg.exports.flatMap((entry, i) => {

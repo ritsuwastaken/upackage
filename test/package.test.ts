@@ -35,7 +35,8 @@ test("builds and parses a package", () => {
   const pkg = sample();
   const bytes = build(pkg);
   const back = parse(bytes);
-  assert.deepEqual(back, { ...pkg, generations: [{ exports: 2, names: 7 }] });
+  assert.deepEqual({ ...back, exports: back.exports.map(({ offset: _, ...entry }) => entry) }, { ...pkg, generations: [{ exports: 2, names: 7 }] });
+  back.exports.forEach((entry) => assert.deepEqual(bytes.subarray(entry.offset!, entry.offset! + entry.data.length), entry.data));
   assert.deepEqual(build(back), bytes);
   assert.equal(path(back, 2), "MyWnd.ScriptText");
   assert.equal(className(back, 1), "Class");

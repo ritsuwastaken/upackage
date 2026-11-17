@@ -50,3 +50,9 @@ export const arrayIndex = {
 } as const;
 
 export const binaryStructs: readonly string[] = ["Vector", "Rotator", "Color"];
+
+export const lazyClasses: readonly string[] = ["Texture", "Sound", "StaticMesh", "SkeletalMesh"];
+
+export const textureCompressionVersion = 84;
+
+export const maxTextureHeader = 256;

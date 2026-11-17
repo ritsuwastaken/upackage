@@ -1,7 +1,8 @@
 import { ArchiveError, packageTag, Reader, versions, Writer } from "@ritsuwastaken/farchive";
 import { minVersion } from "./constants.ts";
 import { PackageError } from "./error.ts";
-import type { Package } from "./types.ts";
+import { placeExport } from "./lazy.ts";
+import type { BuildOptions, Package } from "./types.ts";
 
 const count = (reader: Reader, value: number, what: string, at: number) => {
   if (value < 0 || value > reader.bytes.length) throw new PackageError(`Invalid ${what} count ${value}`, at);
@@ -45,7 +46,7 @@ function read(bytes: Uint8Array): Package {
     const size = reader.index();
     const offset = size > 0 ? reader.index() : 0;
     if (size < 0 || offset < 0 || offset + size > bytes.length) throw new PackageError(`Export data out of range (${offset}+${size})`, reader.offset);
-    return { ...entry, data: bytes.slice(offset, offset + size) };
+    return { ...entry, data: bytes.slice(offset, offset + size), offset };
   });
   const end = Math.max(reader.offset, importOffset, nameOffset);
   const trailer = bytes.slice(end);
@@ -57,7 +58,7 @@ function read(bytes: Uint8Array): Package {
   return { version, licensee, flags, guid, generations, names, imports, exports, trailer };
 }
 
-export function build(pkg: Package): Uint8Array {
+export function build(pkg: Package, options: BuildOptions = {}): Uint8Array {
   const writer = new Writer();
   writer.u32(packageTag);
   writer.u16(pkg.version);
@@ -78,9 +79,9 @@ export function build(pkg: Package): Uint8Array {
     writer.str(entry.name);
     writer.u32(entry.flags);
   }
-  const offsets = pkg.exports.map((entry) => {
+  const offsets = pkg.exports.map((entry, i) => {
     const offset = writer.length;
-    writer.bytes(entry.data);
+    writer.bytes(placeExport(pkg, i + 1, entry, offset, options.relocators));
     return offset;
   });
   const importOffset = writer.length;

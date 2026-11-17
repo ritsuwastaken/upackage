@@ -23,3 +23,9 @@ await writeFile("Engine.u", build(pkg));
 ```
 
 Script text is the UnrealScript source stored next to each compiled class.
+
+## Moving exports
+
+```ts
+build(pkg, { relocators: { StaticMesh: (pkg, ref, data, from, to) => data } });
+```

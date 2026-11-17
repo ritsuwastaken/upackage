@@ -21,6 +21,13 @@ export interface Export {
   name: number;
   flags: number;
   data: Uint8Array;
+  offset?: number;
+}
+
+export type Relocator = (pkg: Package, ref: ObjectRef, data: Uint8Array, from: number, to: number) => Uint8Array;
+
+export interface BuildOptions {
+  relocators?: Readonly<Record<string, Relocator>>;
 }
 
 export interface Generation {

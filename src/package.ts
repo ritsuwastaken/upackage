@@ -31,7 +31,7 @@ function read(bytes: Uint8Array): Package {
   const importCount = count(reader, reader.i32(), "import", 28);
   const importOffset = reader.i32();
   if (version < minVersion || version >= versions.int32Indexes) throw new PackageError(`Package version ${version} is not supported`);
-  const guid = reader.take(16);
+  const guid = new Uint8Array(reader.take(16));
   const generations = Array.from({ length: count(reader, reader.i32(), "generation", reader.offset - 4) }, () => ({ exports: reader.i32(), names: reader.i32() }));
 
   reader.offset = nameOffset;
@@ -46,10 +46,10 @@ function read(bytes: Uint8Array): Package {
     const size = reader.index();
     const offset = size > 0 ? reader.index() : 0;
     if (size < 0 || offset < 0 || offset + size > bytes.length) throw new PackageError(`Export data out of range (${offset}+${size})`, reader.offset);
-    return { ...entry, data: bytes.slice(offset, offset + size), offset };
+    return { ...entry, data: new Uint8Array(bytes.subarray(offset, offset + size)), offset };
   });
   const end = Math.max(reader.offset, importOffset, nameOffset);
-  const trailer = bytes.slice(end);
+  const trailer = new Uint8Array(bytes.subarray(end));
   const check = (index: number, what: string) => {
     if (index < 0 || index >= names.length) throw new PackageError(`${what} refers to name ${index}, but the package has ${names.length}`);
   };

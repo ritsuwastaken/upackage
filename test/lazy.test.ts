@@ -99,6 +99,18 @@ test("keeps data a game appends after a sound's samples", () => {
   assert.deepEqual(after.data, new Uint8Array([...sound(after.offset!, [1, 2]), ...extra]));
 });
 
+test("leaves a package parsed from a node buffer untouched when building", () => {
+  const source = placed(packageWith("Texture"), (base) => texture(base, [[1, 2, 3]]));
+  const pkg = parse(Buffer.from(build(source)));
+  const before = pkg.exports.map((entry) => Uint8Array.from(entry.data));
+  assert.ok(pkg.exports.every((entry) => !Buffer.isBuffer(entry.data)));
+  pkg.exports[0]!.data = new Uint8Array(9);
+  before[0] = new Uint8Array(9);
+  const first = build(pkg);
+  assert.deepEqual(build(pkg), first);
+  assert.deepEqual(pkg.exports.map((entry) => entry.data), before);
+});
+
 test("refuses to move exports whose lazy arrays it can't relocate", () => {
   const pkg = placed(packageWith("SkeletalMesh"), () => new Uint8Array([0, 1, 2, 3]));
   assert.doesNotThrow(() => build(pkg));

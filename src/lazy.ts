@@ -18,7 +18,7 @@ const shiftLazyArray = (pkg: Package, ref: ObjectRef, reader: Reader, out: DataV
 };
 
 const relocate = (pkg: Package, ref: ObjectRef, data: Uint8Array, from: number, to: number, body: (reader: Reader, shift: () => void, properties: ReturnType<typeof readProperties>) => void, trailing = false) => {
-  const out = data.slice();
+  const out = new Uint8Array(data);
   const view = new DataView(out.buffer, out.byteOffset, out.byteLength);
   const properties = readProperties(pkg, data);
   const reader = new Reader(data, { offset: properties.end });
